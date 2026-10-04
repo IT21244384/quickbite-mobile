@@ -3,7 +3,7 @@ Individual Assignment - Full Stack Mobile Application
 QuickBite - Food Ordering Mobile Application
 
 01). GitHub Repository Link
-GitHub Repository: https://github.com/<your-username>/quickbite-mobile
+GitHub Repository: https://github.com/IT21244384/quickbite-mobile
 
 02). Student Details (individual assignment)
 Group Number: N/A - Individual
