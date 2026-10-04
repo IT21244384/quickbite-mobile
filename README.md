@@ -57,15 +57,23 @@ npx expo start              # scan the QR code with Expo Go
 | backend | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Used only by `npm run seed:admin` |
 | mobile  | `EXPO_PUBLIC_API_URL` | Base URL of the hosted API |
 
-## Deployment (Render + Atlas)
+## Deployment (Vercel + Atlas)
 
-1. **Atlas:** create a free M0 cluster, add a database user, and under *Network Access* allow `0.0.0.0/0` (Render has no fixed IP). Copy the connection string and add `/quickbite` as the database name.
-2. **Render:** New → Blueprint → select this repo. `render.yaml` creates the `quickbite-api` service (root `backend`, `npm install`, `npm start`). Enter `MONGO_URI` when prompted; `JWT_SECRET` is generated.
-3. Open `https://<service>.onrender.com/api/health` and expect `{"status":"ok"}`.
+1. **Atlas:** create a free M0 cluster, add a database user, and under *Network Access* allow `0.0.0.0/0` (the host has no fixed outbound IP). Copy the connection string and add `/quickbite` as the database name.
+2. **Vercel:** Add New → Project → import this repo → set **Root Directory** to `backend`. Add `MONGO_URI`, `JWT_SECRET` and `JWT_EXPIRES_IN` as environment variables, then Deploy.
+3. Open `https://<project>.vercel.app/api/health` and expect `{"status":"ok"}`.
 4. Run `npm run seed:admin` locally, with `.env` pointing at the Atlas URI, to create the admin.
-5. Set `EXPO_PUBLIC_API_URL` in `mobile/.env` to the Render URL and restart Expo with `npx expo start -c`.
+5. Set `EXPO_PUBLIC_API_URL` in `mobile/.env` to the Vercel URL and restart Expo with `npx expo start -c`.
 
-On Render's free plan the service sleeps after 15 minutes idle, and the first request after that takes about 50 seconds. Open `/api/health` a minute before a demo.
+### How it runs on Vercel
+
+Vercel keeps no process alive, so `src/server.js` (`app.listen`) is used only for local development.
+On Vercel, `api/index.js` exports the same Express app as a serverless function and `vercel.json`
+rewrites every path to it. A warm function is reused between requests, so the Mongoose connection
+promise is cached in module scope rather than reconnecting on each call.
+
+`render.yaml` is kept in the repo because Render was the first deployment target; its Blueprint flow
+now requires a payment card, so the API moved to Vercel's free tier instead.
 
 ## Folder structure
 
