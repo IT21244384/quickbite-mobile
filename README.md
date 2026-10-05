@@ -12,7 +12,7 @@ A full-stack mobile app where customers browse a menu, place food orders, and tr
 | Database | MongoDB Atlas |
 | Hosting  | Render (web service) |
 
-**Live API:** `https://<your-service>.onrender.com` (health check: `/api/health`)
+**Live API:** `https://quickbite-api-three.vercel.app` (health check: `/api/health`)
 
 ## Entities
 
@@ -41,7 +41,7 @@ npm run dev
 
 # mobile
 cd mobile
-cp .env.example .env        # EXPO_PUBLIC_API_URL=https://<your-service>.onrender.com
+cp .env.example .env        # EXPO_PUBLIC_API_URL=https://quickbite-api-three.vercel.app
 npm install
 npx expo start              # scan the QR code with Expo Go
 ```
@@ -61,7 +61,7 @@ npx expo start              # scan the QR code with Expo Go
 
 1. **Atlas:** create a free M0 cluster, add a database user, and under *Network Access* allow `0.0.0.0/0` (the host has no fixed outbound IP). Copy the connection string and add `/quickbite` as the database name.
 2. **Vercel:** Add New → Project → import this repo → set **Root Directory** to `backend`. Add `MONGO_URI`, `JWT_SECRET` and `JWT_EXPIRES_IN` as environment variables, then Deploy.
-3. Open `https://<project>.vercel.app/api/health` and expect `{"status":"ok"}`.
+3. Open `https://quickbite-api-three.vercel.app/api/health` and expect `{"status":"ok"}`.
 4. Run `npm run seed:admin` locally, with `.env` pointing at the Atlas URI, to create the admin.
 5. Set `EXPO_PUBLIC_API_URL` in `mobile/.env` to the Vercel URL and restart Expo with `npx expo start -c`.
 
