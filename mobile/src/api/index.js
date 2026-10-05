@@ -1,4 +1,3 @@
-import { Platform } from 'react-native';
 import { request } from './client';
 
 // ---------- auth ----------
@@ -20,13 +19,16 @@ async function toMenuForm(fields, image) {
   if (image) {
     const name = image.fileName || `menu-${Date.now()}.jpg`;
     const type = image.mimeType || 'image/jpeg';
-    if (Platform.OS === 'web') {
-      // In a browser the picked image is a blob URL, so turn it into a Blob
-      const blob = await (await fetch(image.uri)).blob();
-      form.append('image', blob, name);
-    } else {
-      form.append('image', { uri: image.uri, name, type });
-    }
+
+    // React Native 0.80+ uses a new networking layer that only accepts a Blob or File here.
+    // The older `{ uri, name, type }` object now fails with "Unsupported FormDataPart
+    // implementation", so the picked file is read into a Blob first. The same code path
+    // works on web, where the picker already returns a blob URL.
+    const raw = await (await fetch(image.uri)).blob();
+    // The blob read back from a file:// URI can arrive without a MIME type, and the API
+    // rejects anything that is not JPEG, PNG or WEBP, so the type is re-applied here.
+    const blob = raw.type ? raw : raw.slice(0, raw.size, type);
+    form.append('image', blob, name);
   }
   return form;
 }

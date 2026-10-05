@@ -40,7 +40,10 @@ export async function request(path, { method = 'GET', body, isForm = false } = {
       body: body ? (isForm ? body : JSON.stringify(body)) : undefined,
     });
   } catch (err) {
-    throw new ApiRequestError('Cannot reach the server. Check your internet connection.', 0);
+    // In development the underlying reason is shown too, so a failed request can be diagnosed
+    // on the device. Release builds keep the plain message.
+    const detail = __DEV__ && err?.message ? ` [${method} ${API_URL}${path} — ${err.message}]` : '';
+    throw new ApiRequestError(`Cannot reach the server. Check your internet connection.${detail}`, 0);
   }
 
   let data = null;
